@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Disable link preview -->
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:image" content="">
+<meta name="twitter:card" content="none">
+
+<title>LOVE INSERTION ARCADE — PRESS START</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+:root{--accent:#ff1e56}
+
+body{
+  margin:0;height:100vh;
+  background:#8b0000;
+  background-image:
+    linear-gradient(0deg, rgba(255,0,0,.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,0,0,.2) 1px, transparent 1px);
+  background-size:20px 20px;
+  display:flex;justify-content:center;align-items:center;
+  font-family:'Press Start 2P',cursive;
+  overflow:hidden;
+}
+
+/* pixel hearts */
+.pixel-heart{
+  position:absolute;width:12px;height:12px;
+  background:#ff4d6d;
+  box-shadow:12px 0 #ff4d6d,0 12px #ff4d6d,12px 12px #ff4d6d,24px 12px #ff4d6d,12px 24px #ff4d6d;
+  opacity:.35;animation:float 12s linear infinite;
+}
+@keyframes float{from{transform:translateY(110vh)}to{transform:translateY(-20vh)}}
+
+.scanlines::before{
+  content:"";position:fixed;inset:0;
+  background:linear-gradient(rgba(255,255,255,.04) 50%,rgba(0,0,0,.2) 50%);
+  background-size:100% 4px;pointer-events:none;
+}
+
+.arcade{
+  width:95%;max-width:600px;
+  background:#120000;
+  border:10px solid var(--accent);
+  border-radius:22px;
+  box-shadow:0 0 60px var(--accent);
+  padding:24px;color:#fff;text-align:center;
+}
+
+h1{font-size:18px;color:#ffd36a;text-shadow:0 0 12px var(--accent);}
+.screen{display:none;animation:pop .4s ease}.active{display:block}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1}}
+
+.box{background:#000;border:6px solid var(--accent);padding:20px;margin:16px 0}
+button{font-family:'Press Start 2P';background:#ffd36a;border:none;padding:14px 22px;cursor:pointer}
+button:hover{background:#ff9f45}
+.progress{height:10px;background:#400000;border:2px solid var(--accent);margin-bottom:10px}
+.bar{height:100%;width:0%;background:#ffd36a}
+
+.coin-slot{position:relative;height:80px}
+.coin{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#fff2a8,#ffd36a,#c99700);position:absolute;left:50%;top:-30px;transform:translateX(-50%);animation:dropCoin 2s infinite}
+@keyframes dropCoin{0%{top:-30px;opacity:0}30%{opacity:1}70%{top:35px}100%{opacity:0}}
+.insert-text{position:absolute;bottom:6px;width:100%;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+
+textarea{width:100%;height:300px;background:#000;color:#ffb3c6;border:6px solid var(--accent);padding:18px;font-family:Poppins;font-size:15px;line-height:1.8;resize:none}
+
+.poem{font-family:Poppins;font-style:italic;white-space:pre-line;line-height:2.2}
+.ps{margin-top:18px;font-family:Poppins;font-style:italic;opacity:0;animation:fadeIn 4s ease forwards;animation-delay:2s}
+@keyframes fadeIn{to{opacity:.45}}
+</style>
+</head>
+<body class="scanlines">
+
+<div class="pixel-heart" style="left:10%"></div>
+<div class="pixel-heart" style="left:30%;animation-delay:3s"></div>
+<div class="pixel-heart" style="left:55%;animation-delay:6s"></div>
+<div class="pixel-heart" style="left:80%;animation-delay:9s"></div>
+
+<div class="arcade">
+<div class="progress"><div class="bar" id="bar"></div></div>
+
+<div class="screen active" id="s1">
+  <h1>LOVE INSERTION ARCADE</h1>
+  <div class="box coin-slot">
+    <div class="coin"></div>
+    <div class="insert-text">INSERT COIN</div>
+  </div>
+  <button onclick="go(2)">START ▶</button>
+</div>
+
+<div class="screen" id="s2">
+  <h1>PLAYER NAME</h1>
+  <div class="box">
+    <input id="name" placeholder="enter your name" style="padding:12px;width:80%;font-family:Poppins;text-align:center">
+  </div>
+  <button onclick="saveName()">CONFIRM ▶</button>
+</div>
+
+<div class="screen" id="s3">
+  <h1>CHOOSE CHARACTER</h1>
+  <div class="box" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+    <button onclick="chooseChar('miffy')">
+      <img src="https://i.imgur.com/PzUisgY.jpeg" width="64" style="image-rendering:pixelated"><br>MIFFY
+    </button>
+    <button onclick="chooseChar('snoopy')">
+      <img src="https://i.imgur.com/FzOvdoW.jpeg" width="64" style="image-rendering:pixelated"><br>SNOOPY
+    </button>
+    <button onclick="chooseChar('dino')">
+      <img src="https://i.imgur.com/I0egH8Q.jpeg" width="64" style="image-rendering:pixelated"><br>DINO
+    </button>
+  </div>
+</div>
+
+<div class="screen" id="s4"><h1>LEVEL 1</h1><div class="box">sometimes i catch myself looking your way.</div><button onclick="next()">NEXT ▶</button></div>
+<div class="screen" id="s5"><h1>LEVEL 2</h1><div class="box">you cross my mind on ordinary days.</div><button onclick="next()">NEXT ▶</button></div>
+
+<div class="screen" id="s6">
+  <h1>LEVEL 3 — MINI GAMES</h1>
+  <div class="box">👀 Tap the eyes 3 times</div>
+  <button onclick="tapMini('l1')">👀</button>
+  <p id="l1">0 / 3</p>
+  <div class="box">💭 Catch the thoughts 4 times</div>
+  <button onclick="tapMini('l2')">💭</button>
+  <p id="l2">0 / 4</p>
+  <div class="box">💙 Tap the heart 5 times</div>
+  <button onclick="tapMini('l3')">💙</button>
+  <p id="l3">0 / 5</p>
+</div>
+
+<div class="screen" id="s7">
+  <h1>CONFESSION</h1>
+  <textarea id="letter" readonly></textarea>
+  <button onclick="next()">CONTINUE ▶</button>
+</div>
+
+<div class="screen" id="s8">
+  <h1>FINAL GAME</h1>
+  <div class="box">⭐ Tap the star to finish</div>
+  <button onclick="next()">⭐</button>
+</div>
+
+<div class="screen" id="s9">
+  <h1>THE END</h1>
+  <div class="box poem">
+you were never a level to beat,
+
+just someone worth waiting for.
+
+if this was a game,
+i’d play it slowly,
+just to stay here a little longer.
+
+whatever happens next,
+i’m glad you were part of this story.
+  </div>
+
+  <div class="ps">
+p.s. i spent a lot of time learning and coding this.  
+i hope you at least like it :)
+  </div>
+
+  <div style="margin-top:20px;color:#ffd36a">🎆 HAPPY NEW YEAR 🎆</div>
+</div>
+
+</div>
+
+<script>
+let screen=1,player='',mini={l1:0,l2:0,l3:0};
+const bar=document.getElementById('bar');
+
+function go(n){screen=n;show()}
+function next(){screen++;show()}
+function show(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+screen).classList.add('active');
+  bar.style.width=((screen-1)/8*100)+'%';
+  if(screen===7) typeLetter();
+}
+
+function saveName(){
+  const n=document.getElementById('name').value.trim();
+  if(!n) return alert('enter your name');
+  player=n; next();
+}
+
+function chooseChar(c){
+  if(c==='dino'){document.documentElement.style.setProperty('--accent','#3cff6b');document.body.style.backgroundColor='#0b3d1e'}
+  if(c==='miffy'){document.documentElement.style.setProperty('--accent','#ffffff');document.body.style.backgroundColor='#111'}
+  if(c==='snoopy'){document.documentElement.style.setProperty('--accent','#5dade2');document.body.style.backgroundColor='#0b1a33'}
+  next();
+}
+
+function tapMini(level){
+  mini[level]++;
+  document.getElementById(level).innerText=mini[level]+' / '+(level==='l1'?3:level==='l2'?4:5);
+  if((level==='l1'&&mini[level]>=3)||(level==='l2'&&mini[level]>=4)||(level==='l3'&&mini[level]>=5)) next();
+}
+
+const confession=`hey ${player}.
+my heart’s been trying to tell me something for a while now,
+and i think i finally listened.
+
+i keep thinking about you.
+like… a lot.
+
+and yeah, you’re really cute—
+but it’s more than that.
+
+it’s the way you smile without realizing it.
+the way you talk about the smallest things like they matter.
+the way you’re kind, even when no one’s watching.
+
+you make me want to be softer.
+braver.
+more honest.
+
+okay.
+here it is—
+
+i like you.
+because you’re you.
+and telling you this is more than enough.`;
+
+function typeLetter(){
+  const box=document.getElementById('letter'); box.value=''; let i=0;
+  const t=setInterval(()=>{
+    box.value+=confession.charAt(i);
+    box.scrollTop=box.scrollHeight;
+    i++;
+    if(i>=confession.length) clearInterval(t);
+  },35);
+}
+</script>
+</body>
+  </html>
